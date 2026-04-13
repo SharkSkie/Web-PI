@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+
+# Environment Variables
+.env
+
+# Build Artifacts
+dist/
+frontend/dist/
+build/
+.cache/
+
+# User Uploads (Zines)
+uploads/
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# IDE Files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Database
+mysql-data/
+*.sql
+!backend/migrations/*.sql
+!backend/seeders/*.sql
+!backend/database/migrations/*.sql
+!backend/database/seeders/*.sql
