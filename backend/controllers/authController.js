@@ -3,7 +3,8 @@ const bcrypt = require('bcryptjs');
 const pool = require('../config/db');
 
 const generateToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
+    const secret = process.env.JWT_SECRET || 'super_secret_zine_key_12345';
+    return jwt.sign({ id }, secret, { expiresIn: '30d' });
 };
 
 exports.registerUser = async (req, res) => {
