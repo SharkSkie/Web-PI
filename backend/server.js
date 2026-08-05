@@ -12,20 +12,22 @@ const adminRoutes = require('./routes/adminRoutes');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Ensure uploads directory exists
+// Ensure uploads directory exists (local dev only; Vercel is ephemeral)
 const uploadsDir = path.join(__dirname, '../uploads');
-if (!fs.existsSync(uploadsDir)){
-    fs.mkdirSync(uploadsDir);
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
 // Middleware
-app.use(cors());
+app.use(cors({
+    origin: process.env.FRONTEND_URL || '*',
+    credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files (Frontend & Uploads)
+// Serve uploaded files
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
-app.use('/', express.static(path.join(__dirname, '../frontend')));
 
 // API Routes
 app.use('/api/zines', zineRoutes);
@@ -33,12 +35,17 @@ app.use('/api/questionnaire', questionnaireRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 
-// Fallback for frontend routing (if needed)
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/index.html'));
+// Health check
+app.get('/api', (req, res) => {
+    res.json({ message: 'API is running', status: 'ok' });
 });
 
-// Start Server
-app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-});
+// Start server only when run directly (not on Vercel)
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`Server running on http://localhost:${PORT}`);
+    });
+}
+
+// Export for Vercel serverless
+module.exports = app;
