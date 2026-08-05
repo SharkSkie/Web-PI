@@ -8,6 +8,7 @@ const password = process.env.DB_PASSWORD || process.env.MYSQL_ADDON_PASSWORD || 
 const database = process.env.DB_NAME || process.env.MYSQL_ADDON_DB || 'bdqygnfxhd52boan8adn';
 const port = parseInt(process.env.DB_PORT || process.env.MYSQL_ADDON_PORT || '3306', 10);
 
+// Serverless-optimized connection pool with low limit to avoid Clever Cloud max_user_connections (limit: 5)
 const pool = mysql.createPool({
     host: host,
     user: user,
@@ -15,7 +16,9 @@ const pool = mysql.createPool({
     database: database,
     port: port,
     waitForConnections: true,
-    connectionLimit: 10,
+    connectionLimit: 2,
+    maxIdle: 2,
+    idleTimeout: 10000,
     queueLimit: 0,
     ssl: {
         rejectUnauthorized: false
