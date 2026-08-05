@@ -12,10 +12,14 @@ const adminRoutes = require('./routes/adminRoutes');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Ensure uploads directory exists (local dev only; Vercel is ephemeral)
+// Ensure uploads directory exists (local dev only; Vercel filesystem is read-only)
 const uploadsDir = path.join(__dirname, '../uploads');
-if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir, { recursive: true });
+try {
+    if (!fs.existsSync(uploadsDir)) {
+        fs.mkdirSync(uploadsDir, { recursive: true });
+    }
+} catch (e) {
+    // Ignore on read-only filesystems (Vercel serverless)
 }
 
 // Middleware
