@@ -26,3 +26,19 @@ exports.updateZineStatus = async (req, res) => {
         res.status(500).json({ error: 'Database error' });
     }
 };
+
+exports.deleteZine = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const [result] = await pool.query('DELETE FROM zines WHERE id = ?', [id]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Zine not found' });
+        }
+
+        res.json({ message: 'Zine deleted successfully' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Database error' });
+    }
+};

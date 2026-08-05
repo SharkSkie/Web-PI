@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Settings, CheckCircle, XCircle, FileText, User as UserIcon, Calendar, ArrowUpRight, ShieldCheck } from 'lucide-react';
+import { Settings, CheckCircle, XCircle, FileText, User as UserIcon, Calendar, ArrowUpRight, ShieldCheck, Trash2 } from 'lucide-react';
 
 function Admin() {
   const [zines, setZines] = useState([]);
@@ -57,6 +57,40 @@ function Admin() {
             title: 'Action Failed',
             text: 'There was an error updating the zine status.',
             confirmButtonColor: '#6366f1'
+        });
+      }
+    }
+  };
+
+  const deleteZine = async (id, title) => {
+    const result = await Swal.fire({
+      title: 'Delete Zine?',
+      html: `Are you sure you want to permanently delete <b>"${title}"</b>?<br/><span class="text-xs text-red-500 font-normal">This action cannot be undone.</span>`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Yes, Delete Permanently'
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await axios.delete(`/api/admin/zines/${id}`);
+        Swal.fire({
+          title: 'Deleted!',
+          text: 'The zine has been removed.',
+          icon: 'success',
+          timer: 1500,
+          showConfirmButton: false
+        });
+        fetchAdminZines(); // refresh list
+      } catch (err) {
+        console.error(err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Delete Failed',
+          text: err.response?.data?.error || 'There was an error deleting the zine.',
+          confirmButtonColor: '#ef4444'
         });
       }
     }
@@ -162,6 +196,14 @@ function Admin() {
                             </button>
                             </>
                         )}
+
+                        <button 
+                            onClick={() => deleteZine(zine.id, zine.title)} 
+                            className="w-10 h-10 flex items-center justify-center rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white transition-all shadow-sm"
+                            title="Delete Zine"
+                        >
+                            <Trash2 size={18} />
+                        </button>
                     </div>
                 </div>
               </motion.div>
