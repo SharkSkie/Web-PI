@@ -36,7 +36,21 @@ function Register() {
     if (formData.password.length < 6) newErrors.password = 'Password must be at least 6 characters.';
     if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Passwords do not match.';
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    
+    if (Object.keys(newErrors).length > 0) {
+      const firstErr = Object.values(newErrors)[0];
+      Swal.fire({
+        icon: 'warning',
+        title: 'Validation Warning',
+        text: firstErr,
+        confirmButtonColor: '#0071e3',
+        toast: true,
+        position: 'top-end',
+        timer: 3000
+      });
+      return false;
+    }
+    return true;
   };
 
   const handleChange = (field, value) => {
