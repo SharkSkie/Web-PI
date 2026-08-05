@@ -12,26 +12,29 @@ exports.registerUser = async (req, res) => {
         const { name, email, password } = req.body;
 
         if (!name || !email || !password) {
-            return res.status(400).json({ error: 'Please add all fields' });
+            return res.status(400).json({ error: 'Please fill in all fields' });
         }
 
-        const [userExists] = await pool.query('SELECT email FROM users WHERE email = ?', [email]);
+        const cleanEmail = email.trim().toLowerCase();
+        const cleanName = name.trim();
+
+        const [userExists] = await pool.query('SELECT email FROM users WHERE LOWER(TRIM(email)) = ?', [cleanEmail]);
         if (userExists.length > 0) {
             return res.status(400).json({ error: 'User already exists' });
         }
 
         const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
+        const hashedPassword = await bcrypt.hash(password.trim(), salt);
 
         const [result] = await pool.query(
             'INSERT INTO users (name, email, password) VALUES (?, ?, ?)',
-            [name, email, hashedPassword]
+            [cleanName, cleanEmail, hashedPassword]
         );
 
         res.status(201).json({
             id: result.insertId,
-            name,
-            email,
+            name: cleanName,
+            email: cleanEmail,
             role: 'user',
             token: generateToken(result.insertId)
         });
@@ -49,19 +52,22 @@ exports.loginUser = async (req, res) => {
             return res.status(400).json({ error: 'Please fill in all fields' });
         }
 
-        const [rows] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
+        const cleanEmail = email.trim().toLowerCase();
+        const cleanPassword = password.trim();
+
+        const [rows] = await pool.query('SELECT * FROM users WHERE LOWER(TRIM(email)) = ?', [cleanEmail]);
         if (rows.length === 0) {
-            return res.status(400).json({ error: 'Invalid credentials' });
+            return res.status(400).json({ error: 'Invalid email or password' });
         }
 
         const user = rows[0];
 
         let isMatch = false;
         try {
-            isMatch = await bcrypt.compare(password, user.password);
+            isMatch = await bcrypt.compare(cleanPassword, user.password);
         } catch(e) {}
-        
-        if (!isMatch && password === user.password) {
+
+        if (!isMatch && (cleanPassword === user.password || password === user.password)) {
             isMatch = true;
         }
 
@@ -74,7 +80,7 @@ exports.loginUser = async (req, res) => {
                 token: generateToken(user.id)
             });
         } else {
-            res.status(400).json({ error: 'Invalid credentials' });
+            res.status(400).json({ error: 'Invalid email or password' });
         }
     } catch (error) {
         console.error('Login error:', error);
