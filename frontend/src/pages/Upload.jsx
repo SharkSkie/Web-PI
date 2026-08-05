@@ -105,11 +105,11 @@ function Upload() {
                 ></textarea>
               </div>
               <div>
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 ml-0.5 block">PDF File</label>
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 ml-0.5 block">Zine File (PDF or Image)</label>
                 <div className="relative group">
                   <input
                     type="file"
-                    accept="application/pdf"
+                    accept="application/pdf, image/jpeg, image/png, image/jpg, image/webp"
                     className="absolute inset-0 opacity-0 w-full h-full cursor-pointer z-10"
                     onChange={handleFileChange}
                     required
@@ -117,7 +117,7 @@ function Upload() {
                   <div className={`w-full p-6 border border-dashed rounded-[20px] flex flex-col items-center justify-center transition-all ${file ? 'border-indigo-600 bg-indigo-50/30' : 'border-slate-250 group-hover:border-indigo-400'}`}>
                     <FileText className={`mb-2 ${file ? 'text-indigo-600' : 'text-slate-300'}`} size={28} />
                     <span className={`text-sm font-medium ${file ? 'text-indigo-700' : 'text-slate-500'}`}>
-                      {file ? file.name : 'Select PDF Zine'}
+                      {file ? file.name : 'Select PDF or Image Zine (PDF, PNG, JPG)'}
                     </span>
                     <span className="text-[10px] text-slate-400 mt-0.5">Maximum size: 10MB</span>
                   </div>

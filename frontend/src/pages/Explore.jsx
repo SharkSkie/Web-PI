@@ -72,7 +72,7 @@ function Explore() {
                   </div>
                   
                   <a 
-                    href={zine.file_path ? zine.file_path.replace('/upload/', '/upload/fl_attachment/') : '#'} 
+                    href={zine.file_path || '#'} 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className={`flex items-center justify-center gap-1.5 w-full py-2.5 rounded-full text-sm font-semibold transition-all border-none ${
@@ -82,7 +82,7 @@ function Explore() {
                     }`}
                     onClick={e => !zine.file_path && e.preventDefault()}
                   >
-                    Read Zine <ArrowUpRight size={16} />
+                    View Zine <ArrowUpRight size={16} />
                   </a>
                 </div>
               </motion.div>
