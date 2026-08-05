@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, User as UserIcon, Calendar, Eye, X, ExternalLink, Image as ImageIcon } from 'lucide-react';
+import { FileText, User as UserIcon, Calendar, Eye, X, ExternalLink, Image as ImageIcon, Download } from 'lucide-react';
 
 function Explore() {
   const [zines, setZines] = useState([]);
@@ -28,13 +28,37 @@ function Explore() {
     return url.match(/\.(jpeg|jpg|png|webp|gif)($|\?)/i) || (url.includes('/image/upload/') && !url.endsWith('.pdf'));
   };
 
+  const handleDownload = (zine, e) => {
+    if (e) e.stopPropagation();
+    if (!zine || !zine.file_path) return;
+
+    let downloadUrl = zine.file_path;
+    
+    // If it's a Cloudinary URL, force attachment mode so browser prompts file download
+    if (downloadUrl.includes('cloudinary.com') && downloadUrl.includes('/upload/')) {
+      downloadUrl = downloadUrl.replace('/upload/', '/upload/fl_attachment/');
+    }
+
+    const cleanTitle = (zine.title || 'zine').replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    const isImg = isImageFile(downloadUrl);
+    const fileName = `${cleanTitle}${isImg ? '.png' : '.pdf'}`;
+
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = fileName;
+    link.target = '_blank';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-6 space-y-12">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="space-y-3">
           <h1 className="text-3xl font-extrabold text-slate-900 leading-tight tracking-tight">Zine Community</h1>
           <p className="text-base text-slate-500 max-w-2xl font-light">
-            Explore digital voices from around the world. Click any zine to read or view it directly inside the app.
+            Explore digital voices from around the world. Click any zine to read inside the app or download a copy.
           </p>
         </div>
       </div>
@@ -78,17 +102,28 @@ function Explore() {
                     </div>
                   </div>
                   
-                  <button 
-                    onClick={() => zine.file_path && setSelectedZine(zine)}
-                    disabled={!zine.file_path}
-                    className={`flex items-center justify-center gap-2 w-full py-2.5 rounded-full text-sm font-semibold transition-all border-none ${
-                      zine.file_path 
-                        ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md shadow-indigo-100 cursor-pointer' 
-                        : 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                    }`}
-                  >
-                    <Eye size={16} /> Read Zine
-                  </button>
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={() => zine.file_path && setSelectedZine(zine)}
+                      disabled={!zine.file_path}
+                      className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-full text-sm font-semibold transition-all border-none ${
+                        zine.file_path 
+                          ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md shadow-indigo-100 cursor-pointer' 
+                          : 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                      }`}
+                    >
+                      <Eye size={16} /> Read
+                    </button>
+
+                    <button
+                      onClick={(e) => handleDownload(zine, e)}
+                      disabled={!zine.file_path}
+                      className="px-4 py-2.5 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-slate-900 text-sm font-semibold transition-all flex items-center gap-1.5"
+                      title="Download Zine"
+                    >
+                      <Download size={16} />
+                    </button>
+                  </div>
                 </div>
               </motion.div>
             ))}
@@ -134,6 +169,14 @@ function Explore() {
                 </div>
 
                 <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handleDownload(selectedZine)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white text-xs font-bold transition-all"
+                    title="Download Copy"
+                  >
+                    <Download size={14} /> Download
+                  </button>
+
                   {!selectedZine.file_path.startsWith('data:') && (
                     <a
                       href={selectedZine.file_path}
