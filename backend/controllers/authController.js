@@ -7,16 +7,29 @@ const generateToken = (id) => {
     return jwt.sign({ id }, secret, { expiresIn: '30d' });
 };
 
+// Helper to safely parse req.body in Vercel serverless environment
+const parseBody = (req) => {
+    let body = req.body;
+    if (typeof body === 'string') {
+        try {
+            body = JSON.parse(body);
+        } catch (e) {}
+    }
+    return body || {};
+};
+
 exports.registerUser = async (req, res) => {
     try {
-        const { name, email, password } = req.body;
+        const body = parseBody(req);
+        const { name, email, password } = body;
 
         if (!name || !email || !password) {
             return res.status(400).json({ error: 'Please fill in all fields' });
         }
 
-        const cleanEmail = email.trim().toLowerCase();
-        const cleanName = name.trim();
+        const cleanEmail = String(email).trim().toLowerCase();
+        const cleanName = String(name).trim();
+        const cleanPassword = String(password).trim();
 
         const [userExists] = await pool.query('SELECT email FROM users WHERE LOWER(TRIM(email)) = ?', [cleanEmail]);
         if (userExists.length > 0) {
@@ -24,7 +37,7 @@ exports.registerUser = async (req, res) => {
         }
 
         const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password.trim(), salt);
+        const hashedPassword = await bcrypt.hash(cleanPassword, salt);
 
         const [result] = await pool.query(
             'INSERT INTO users (name, email, password) VALUES (?, ?, ?)',
@@ -46,14 +59,15 @@ exports.registerUser = async (req, res) => {
 
 exports.loginUser = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const body = parseBody(req);
+        const { email, password } = body;
 
         if (!email || !password) {
             return res.status(400).json({ error: 'Please fill in all fields' });
         }
 
-        const cleanEmail = email.trim().toLowerCase();
-        const cleanPassword = password.trim();
+        const cleanEmail = String(email).trim().toLowerCase();
+        const cleanPassword = String(password).trim();
 
         const [rows] = await pool.query('SELECT * FROM users WHERE LOWER(TRIM(email)) = ?', [cleanEmail]);
         if (rows.length === 0) {
@@ -67,7 +81,7 @@ exports.loginUser = async (req, res) => {
             isMatch = await bcrypt.compare(cleanPassword, user.password);
         } catch(e) {}
 
-        if (!isMatch && (cleanPassword === user.password || password === user.password)) {
+        if (!isMatch && (cleanPassword === user.password || String(password) === user.password)) {
             isMatch = true;
         }
 
