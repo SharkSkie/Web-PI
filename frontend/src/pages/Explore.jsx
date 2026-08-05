@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, User as UserIcon, Calendar, ArrowUpRight } from 'lucide-react';
+import { FileText, User as UserIcon, Calendar, Eye, X, ExternalLink, Image as ImageIcon } from 'lucide-react';
 
 function Explore() {
   const [zines, setZines] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedZine, setSelectedZine] = useState(null);
 
   useEffect(() => {
     const fetchZines = async () => {
@@ -21,13 +22,18 @@ function Explore() {
     fetchZines();
   }, []);
 
+  const isImageFile = (url) => {
+    if (!url) return false;
+    return url.match(/\.(jpeg|jpg|png|webp|gif)($|\?)/i) || (url.includes('/image/upload/') && !url.endsWith('.pdf'));
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-6 space-y-12">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="space-y-3">
           <h1 className="text-3xl font-extrabold text-slate-900 leading-tight tracking-tight">Zine Community</h1>
           <p className="text-base text-slate-500 max-w-2xl font-light">
-            Explore digital voices from around the world. These zines are created by individuals for self-expression and reflection.
+            Explore digital voices from around the world. Click any zine to read or view it directly inside the app.
           </p>
         </div>
       </div>
@@ -47,7 +53,7 @@ function Explore() {
               >
                 <div>
                   <div className="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center text-indigo-600 mb-6 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300">
-                    <FileText size={20} />
+                    {isImageFile(zine.file_path) ? <ImageIcon size={20} /> : <FileText size={20} />}
                   </div>
                   
                   <h3 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-indigo-600 transition-colors tracking-tight">
@@ -71,19 +77,17 @@ function Explore() {
                     </div>
                   </div>
                   
-                  <a 
-                    href={zine.file_path || '#'} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className={`flex items-center justify-center gap-1.5 w-full py-2.5 rounded-full text-sm font-semibold transition-all border-none ${
+                  <button 
+                    onClick={() => zine.file_path && setSelectedZine(zine)}
+                    disabled={!zine.file_path}
+                    className={`flex items-center justify-center gap-2 w-full py-2.5 rounded-full text-sm font-semibold transition-all border-none ${
                       zine.file_path 
-                        ? 'bg-slate-100 text-slate-800 hover:bg-slate-200 cursor-pointer' 
-                        : 'bg-slate-50 text-slate-400 cursor-not-allowed'
+                        ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md shadow-indigo-100 cursor-pointer' 
+                        : 'bg-slate-100 text-slate-400 cursor-not-allowed'
                     }`}
-                    onClick={e => !zine.file_path && e.preventDefault()}
                   >
-                    View Zine <ArrowUpRight size={16} />
-                  </a>
+                    <Eye size={16} /> Read Zine
+                  </button>
                 </div>
               </motion.div>
             ))}
@@ -98,6 +102,75 @@ function Explore() {
           <p className="text-slate-500">Be the first to share your voice with the community.</p>
         </div>
       )}
+
+      {/* IN-APP READER MODAL */}
+      <AnimatePresence>
+        {selectedZine && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4 md:p-8"
+            onClick={() => setSelectedZine(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-3xl shadow-2xl w-full max-w-5xl h-[85vh] flex flex-col overflow-hidden border border-slate-200"
+            >
+              {/* Modal Header */}
+              <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-indigo-50 text-indigo-600 rounded-xl">
+                    {isImageFile(selectedZine.file_path) ? <ImageIcon size={20} /> : <FileText size={20} />}
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-slate-900 text-base leading-tight">{selectedZine.title}</h3>
+                    <p className="text-xs text-slate-500 font-light">By {selectedZine.author}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <a
+                    href={selectedZine.file_path}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-all"
+                    title="Open original link"
+                  >
+                    <ExternalLink size={18} />
+                  </a>
+                  <button
+                    onClick={() => setSelectedZine(null)}
+                    className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-all"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Modal Viewer Content */}
+              <div className="flex-1 bg-slate-900/5 overflow-auto flex items-center justify-center p-4">
+                {isImageFile(selectedZine.file_path) ? (
+                  <img
+                    src={selectedZine.file_path}
+                    alt={selectedZine.title}
+                    className="max-h-full max-w-full object-contain rounded-xl shadow-md"
+                  />
+                ) : (
+                  <iframe
+                    src={`https://docs.google.com/gview?url=${encodeURIComponent(selectedZine.file_path)}&embedded=true`}
+                    className="w-full h-full rounded-xl border-none shadow-inner bg-white"
+                    title={selectedZine.title}
+                  />
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
