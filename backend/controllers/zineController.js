@@ -1,33 +1,49 @@
 const pool = require('../config/db');
 const cloudinary = require('cloudinary').v2;
 
-// Configure Cloudinary from environment variables
-cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET
-});
+// Configure Cloudinary from environment variables if available
+if (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET) {
+    cloudinary.config({
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY,
+        api_secret: process.env.CLOUDINARY_API_SECRET
+    });
+}
 
 /**
- * Upload a buffer to Cloudinary and return the secure URL
+ * Upload a buffer to Cloudinary with automatic Base64 Data URL fallback
  */
-const uploadToCloudinary = (buffer, originalname) => {
-    return new Promise((resolve, reject) => {
-        const cleanName = originalname.replace(/\.[^/.]+$/, "").replace(/\s+/g, '_');
-        const filename = `${Date.now()}-${cleanName}`;
-        const stream = cloudinary.uploader.upload_stream(
-            {
-                resource_type: 'auto',
-                folder: 'mindzine',
-                public_id: filename
-            },
-            (error, result) => {
-                if (error) return reject(error);
-                resolve(result.secure_url);
-            }
-        );
-        stream.end(buffer);
-    });
+const saveZineFile = async (file) => {
+    const { buffer, originalname, mimetype } = file;
+    const cleanName = originalname.replace(/\.[^/.]+$/, "").replace(/\s+/g, '_');
+    const filename = `${Date.now()}-${cleanName}`;
+
+    // Try Cloudinary first if configured
+    if (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET) {
+        try {
+            const url = await new Promise((resolve, reject) => {
+                const stream = cloudinary.uploader.upload_stream(
+                    {
+                        resource_type: 'auto',
+                        folder: 'mindzine',
+                        public_id: filename
+                    },
+                    (error, result) => {
+                        if (error) return reject(error);
+                        resolve(result.secure_url);
+                    }
+                );
+                stream.end(buffer);
+            });
+            return url;
+        } catch (cloudinaryError) {
+            console.warn('Cloudinary upload failed, falling back to Data URL:', cloudinaryError.message);
+        }
+    }
+
+    // Fallback: Convert to Base64 Data URL so upload and preview ALWAYS succeed!
+    const base64Data = buffer.toString('base64');
+    return `data:${mimetype};base64,${base64Data}`;
 };
 
 exports.uploadZine = async (req, res) => {
@@ -39,8 +55,8 @@ exports.uploadZine = async (req, res) => {
             return res.status(400).json({ error: 'No file uploaded' });
         }
 
-        // Upload file buffer to Cloudinary
-        const fileUrl = await uploadToCloudinary(req.file.buffer, req.file.originalname);
+        // Save file (Cloudinary or Data URL fallback)
+        const fileUrl = await saveZineFile(req.file);
 
         const [result] = await pool.query(
             'INSERT INTO zines (user_id, title, description, file_path) VALUES (?, ?, ?, ?)',

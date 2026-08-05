@@ -24,6 +24,7 @@ function Explore() {
 
   const isImageFile = (url) => {
     if (!url) return false;
+    if (url.startsWith('data:image/')) return true;
     return url.match(/\.(jpeg|jpg|png|webp|gif)($|\?)/i) || (url.includes('/image/upload/') && !url.endsWith('.pdf'));
   };
 
@@ -133,15 +134,17 @@ function Explore() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <a
-                    href={selectedZine.file_path}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-all"
-                    title="Open original link"
-                  >
-                    <ExternalLink size={18} />
-                  </a>
+                  {!selectedZine.file_path.startsWith('data:') && (
+                    <a
+                      href={selectedZine.file_path}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-all"
+                      title="Open link"
+                    >
+                      <ExternalLink size={18} />
+                    </a>
+                  )}
                   <button
                     onClick={() => setSelectedZine(null)}
                     className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-all"
@@ -160,11 +163,17 @@ function Explore() {
                     className="max-h-full max-w-full object-contain rounded-xl shadow-md"
                   />
                 ) : (
-                  <iframe
-                    src={`https://docs.google.com/gview?url=${encodeURIComponent(selectedZine.file_path)}&embedded=true`}
+                  <object
+                    data={selectedZine.file_path}
+                    type="application/pdf"
                     className="w-full h-full rounded-xl border-none shadow-inner bg-white"
-                    title={selectedZine.title}
-                  />
+                  >
+                    <embed
+                      src={selectedZine.file_path}
+                      type="application/pdf"
+                      className="w-full h-full rounded-xl"
+                    />
+                  </object>
                 )}
               </div>
             </motion.div>
