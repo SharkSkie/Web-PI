@@ -60,88 +60,87 @@ function Result() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-12">
+    <div className="max-w-3xl mx-auto px-6 py-12">
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass-card p-10 md:p-16 border-none text-center relative overflow-hidden"
+        className="glass-card p-8 md:p-12 border border-slate-200/50 text-center relative overflow-hidden"
       >
-        <div className="absolute top-0 right-0 p-8 text-indigo-100 drop-shadow-sm">
-            <Sparkles size={120} />
+        <div className="absolute top-0 right-0 p-6 text-indigo-100/40 pointer-events-none">
+            <Sparkles size={80} />
         </div>
 
         <div className="relative z-10">
-          <h1 className="text-4xl font-bold text-slate-900 mb-4 leading-tight">Your Mindscape Analysis</h1>
-          <p className="text-lg text-slate-500 max-w-2xl mx-auto mb-16">
+          <h1 className="text-3xl font-extrabold text-slate-900 mb-3 tracking-tight leading-tight">Your Mindscape Analysis</h1>
+          <p className="text-base text-slate-500 max-w-xl mx-auto mb-12 font-light">
             Everything starts with awareness. Here’s a breakdown of the internal and external forces shaping your well-being today.
           </p>
 
-          <div className="grid md:grid-cols-2 gap-12 text-left mb-16">
+          <div className="grid md:grid-cols-2 gap-10 text-left mb-12">
             {/* Internal Score */}
-            <div className="space-y-6">
+            <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600">
-                    <Brain size={20} />
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-indigo-600">
+                    <Brain size={18} />
                   </div>
-                  <span className="font-bold text-slate-800">Internal Influence</span>
+                  <span className="font-semibold text-slate-800 text-sm tracking-tight">Internal Influence</span>
                 </div>
-                <span className="text-2xl font-black text-indigo-600">{result.internal_score}%</span>
+                <span className="text-xl font-bold text-indigo-600">{result.internal_score}%</span>
               </div>
-              <div className="w-full h-4 bg-slate-100 rounded-full overflow-hidden">
+              <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
                 <motion.div 
                   initial={{ width: 0 }}
                   animate={{ width: `${result.internal_score}%` }}
-                  transition={{ duration: 1.5, ease: "easeOut" }}
-                  className="h-full bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-full shadow-lg shadow-indigo-100"
+                  transition={{ duration: 1.2, ease: "easeOut" }}
+                  className="h-full bg-indigo-600 rounded-full"
                 />
               </div>
-              <p className="text-sm text-slate-500 italic">Driven by personal emotions, mindset, and introspection.</p>
+              <p className="text-xs text-slate-400 font-light italic">Driven by personal emotions, mindset, and introspection.</p>
             </div>
 
             {/* External Score */}
-            <div className="space-y-6">
+            <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-violet-50 rounded-xl flex items-center justify-center text-violet-600">
-                    <Compass size={20} />
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-indigo-600">
+                    <Compass size={18} />
                   </div>
-                  <span className="font-bold text-slate-800">External Influence</span>
+                  <span className="font-semibold text-slate-800 text-sm tracking-tight">External Influence</span>
                 </div>
-                <span className="text-2xl font-black text-violet-600">{result.external_score}%</span>
+                <span className="text-xl font-bold text-indigo-600">{result.external_score}%</span>
               </div>
-              <div className="w-full h-4 bg-slate-100 rounded-full overflow-hidden">
+              <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
                 <motion.div 
                    initial={{ width: 0 }}
                    animate={{ width: `${result.external_score}%` }}
-                   transition={{ duration: 1.5, ease: "easeOut", delay: 0.2 }}
-                   className="h-full bg-gradient-to-r from-violet-500 to-violet-600 rounded-full shadow-lg shadow-violet-100"
+                   transition={{ duration: 1.2, ease: "easeOut", delay: 0.15 }}
+                   className="h-full bg-indigo-600 rounded-full"
                 />
               </div>
-                <p className="text-sm text-slate-500 italic">Driven by environment, community, and worldly events.</p>
+              <p className="text-xs text-slate-400 font-light italic">Driven by environment, community, and worldly events.</p>
             </div>
           </div>
 
-          <div className="text-left bg-slate-50 p-8 md:p-12 rounded-[2rem] border border-slate-100 mb-12 relative overflow-hidden">
-             <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-100/50 rounded-full -translate-y-16 translate-x-16"></div>
-             <h3 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-3">
-                <Sparkles size={24} className="text-indigo-600" /> Professional Insight
+          <div className="text-left bg-[#f5f5f7] p-6 md:p-8 rounded-[20px] mb-8 relative overflow-hidden">
+             <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+                <Sparkles size={18} className="text-indigo-600" /> Insight
              </h3>
-             <p className="text-lg text-slate-700 leading-relaxed relative z-10">
+             <p className="text-base text-slate-700 leading-relaxed font-light relative z-10">
                {result.conclusion}
              </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 border-t border-slate-100 pt-12">
-            <Link to="/explore" className="btn-primary py-4 px-10 w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 border-t border-slate-200/50 pt-8">
+            <Link to="/explore" className="btn-primary py-2.5 px-8 text-sm font-semibold w-full sm:w-auto text-center">
               Explore Community Zines
             </Link>
-            <Link to="/upload" className="btn-secondary py-4 px-10 w-full sm:w-auto bg-slate-100">
+            <Link to="/upload" className="btn-secondary py-2.5 px-8 text-sm font-semibold w-full sm:w-auto text-center">
               Create a Zine
             </Link>
           </div>
 
-          <p className="mt-12 text-xs text-slate-400 max-w-2xl mx-auto italic leading-loose">
+          <p className="mt-10 text-[10px] text-slate-400 max-w-xl mx-auto italic leading-relaxed font-light">
             Disclaimer: This analysis is part of a self-reflection platform and is purely for personal insight. It does not constitute a clinical or medical diagnosis. If you are experiencing distress, please consult with a licensed mental health professional.
           </p>
         </div>

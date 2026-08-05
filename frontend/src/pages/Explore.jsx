@@ -24,9 +24,9 @@ function Explore() {
   return (
     <div className="max-w-7xl mx-auto px-6 space-y-12">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div className="space-y-4">
-          <h1 className="text-4xl font-bold text-slate-900 leading-tight">Zine Community</h1>
-          <p className="text-lg text-slate-500 max-w-2xl">
+        <div className="space-y-3">
+          <h1 className="text-3xl font-extrabold text-slate-900 leading-tight tracking-tight">Zine Community</h1>
+          <p className="text-base text-slate-500 max-w-2xl font-light">
             Explore digital voices from around the world. These zines are created by individuals for self-expression and reflection.
           </p>
         </div>
@@ -42,29 +42,31 @@ function Explore() {
                 key={zine.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="group glass-card hover:bg-white p-8 border-none flex flex-col"
+                transition={{ delay: index * 0.05 }}
+                className="group glass-card hover:bg-[#f5f5f7] p-8 border border-slate-200/40 flex flex-col justify-between"
               >
-                <div className="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600 mb-6 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300">
-                  <FileText size={24} />
+                <div>
+                  <div className="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center text-indigo-600 mb-6 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300">
+                    <FileText size={20} />
+                  </div>
+                  
+                  <h3 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-indigo-600 transition-colors tracking-tight">
+                    {zine.title}
+                  </h3>
+                  
+                  <p className="text-sm text-slate-500 mb-6 line-clamp-3 leading-relaxed font-light">
+                    {zine.description}
+                  </p>
                 </div>
-                
-                <h3 className="text-xl font-bold text-slate-900 mb-3 group-hover:text-indigo-600 transition-colors">
-                  {zine.title}
-                </h3>
-                
-                <p className="text-slate-500 mb-6 flex-grow line-clamp-3 leading-relaxed">
-                  {zine.description}
-                </p>
 
-                <div className="space-y-4 pt-6 border-t border-slate-100">
-                  <div className="flex items-center justify-between text-sm text-slate-400">
-                    <div className="flex items-center gap-2">
-                       <UserIcon size={14} />
+                <div className="space-y-4 pt-6 border-t border-slate-200/50">
+                  <div className="flex items-center justify-between text-xs text-slate-400 font-light">
+                    <div className="flex items-center gap-1.5">
+                       <UserIcon size={12} className="text-slate-500" />
                        <span className="font-medium text-slate-600">{zine.author}</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                       <Calendar size={14} />
+                    <div className="flex items-center gap-1.5">
+                       <Calendar size={12} />
                        <span>{new Date(zine.created_at).toLocaleDateString()}</span>
                     </div>
                   </div>
@@ -73,9 +75,9 @@ function Explore() {
                     href={zine.file_path} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-slate-50 text-slate-700 font-semibold hover:bg-slate-100 transition-all border border-slate-200"
+                    className="flex items-center justify-center gap-1.5 w-full py-2.5 rounded-full bg-slate-100 text-slate-800 text-sm font-semibold hover:bg-slate-200 transition-all border-none"
                   >
-                    Read Zine <ArrowUpRight size={18} />
+                    Read Zine <ArrowUpRight size={16} />
                   </a>
                 </div>
               </motion.div>

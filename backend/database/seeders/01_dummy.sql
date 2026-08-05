@@ -1,7 +1,9 @@
 -- Insert dummy users
 INSERT IGNORE INTO users (id, name, email, password, role) VALUES 
 (1, 'Demo User', 'user@demo.com', 'password', 'user'),
-(2, 'Admin Manager', 'admin@demo.com', 'admin_pass', 'admin');
+(2, 'Admin Manager', 'admin@demo.com', 'admin_pass', 'admin'),
+(3, 'Rian', 'rian@gmail.com', 'Password123', 'user'),
+(4, 'Admin', 'admin@mindzine.com', 'Admin123', 'admin');
 
 -- Insert a dummy approved zine
 INSERT IGNORE INTO zines (id, user_id, title, description, file_path, status) VALUES

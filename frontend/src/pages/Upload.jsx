@@ -62,50 +62,50 @@ function Upload() {
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass-card p-10 md:p-16 border-none"
+        className="glass-card p-8 md:p-12 border border-slate-200/50"
       >
-        <div className="flex flex-col md:flex-row gap-12">
+        <div className="flex flex-col md:flex-row gap-10">
           <div className="flex-1 space-y-6">
-            <div className="w-16 h-16 bg-indigo-100 rounded-2xl flex items-center justify-center text-indigo-600">
-              <UploadCloud size={32} />
+            <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center text-slate-800">
+              <UploadCloud size={22} />
             </div>
-            <h2 className="text-3xl font-bold text-slate-900 leading-tight">Share Your Story</h2>
-            <p className="text-slate-500 leading-relaxed">
+            <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 leading-tight tracking-tight">Share Your Story</h2>
+            <p className="text-sm text-slate-500 leading-relaxed font-light">
               Upload your digital zine to our community gallery. Express your thoughts, feelings, and artistic vision.
             </p>
-            <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 flex gap-4">
-              <Info className="text-indigo-600 shrink-0" size={20} />
-              <p className="text-sm text-slate-600">
+            <div className="p-5 bg-slate-50 rounded-[20px] border border-slate-200/40 flex gap-3">
+              <Info className="text-indigo-600 shrink-0" size={18} />
+              <p className="text-xs text-slate-500 leading-relaxed font-light">
                 All zines are reviewed by our team to maintain a safe and supportive environment for everyone.
               </p>
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="flex-[1.5] space-y-6">
+          <form onSubmit={handleSubmit} className="flex-[1.5] space-y-5">
             <div className="space-y-4">
               <div>
-                <label className="text-sm font-semibold text-slate-700 ml-1 mb-2 block">Zine Title</label>
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 ml-0.5 block">Zine Title</label>
                 <input
                   type="text"
                   placeholder="e.g. My Inner World"
-                  className="input-field"
+                  className="input-field text-sm py-2.5"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   required
                 />
               </div>
               <div>
-                <label className="text-sm font-semibold text-slate-700 ml-1 mb-2 block">Tell us about it</label>
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 ml-0.5 block">Tell us about it</label>
                 <textarea
                   placeholder="What is this expression about?"
                   rows="4"
-                  className="input-field resize-none leading-relaxed"
+                  className="input-field text-sm py-2.5 resize-none leading-relaxed"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                 ></textarea>
               </div>
               <div>
-                <label className="text-sm font-semibold text-slate-700 ml-1 mb-2 block">PDF File</label>
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 ml-0.5 block">PDF File</label>
                 <div className="relative group">
                   <input
                     type="file"
@@ -114,12 +114,12 @@ function Upload() {
                     onChange={handleFileChange}
                     required
                   />
-                  <div className={`w-full p-8 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center transition-all ${file ? 'border-indigo-500 bg-indigo-50' : 'border-slate-200 group-hover:border-indigo-300'}`}>
-                    <FileText className={`mb-3 ${file ? 'text-indigo-600' : 'text-slate-300'}`} size={32} />
-                    <span className={`font-medium ${file ? 'text-indigo-700' : 'text-slate-500'}`}>
+                  <div className={`w-full p-6 border border-dashed rounded-[20px] flex flex-col items-center justify-center transition-all ${file ? 'border-indigo-600 bg-indigo-50/30' : 'border-slate-250 group-hover:border-indigo-400'}`}>
+                    <FileText className={`mb-2 ${file ? 'text-indigo-600' : 'text-slate-300'}`} size={28} />
+                    <span className={`text-sm font-medium ${file ? 'text-indigo-700' : 'text-slate-500'}`}>
                       {file ? file.name : 'Select PDF Zine'}
                     </span>
-                    <span className="text-xs text-slate-400 mt-1">Maximum size: 10MB</span>
+                    <span className="text-[10px] text-slate-400 mt-0.5">Maximum size: 10MB</span>
                   </div>
                 </div>
               </div>
@@ -127,12 +127,12 @@ function Upload() {
 
             <button 
               type="submit" 
-              className="btn-primary w-full py-4 text-lg flex items-center justify-center gap-3" 
+              className="btn-primary w-full py-3 text-base flex items-center justify-center gap-2 font-medium" 
               disabled={loading}
             >
               {loading ? (
                 <>
-                  <Loader2 className="animate-spin" size={20} />
+                  <Loader2 className="animate-spin" size={18} />
                   Uploading...
                 </>
               ) : (

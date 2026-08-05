@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-[#F8FAFC] text-slate-900 font-['Inter',sans-serif] min-h-screen antialiased;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/70 backdrop-blur-md border border-white/40 shadow-xl rounded-3xl transition-all duration-300;
+  }
+
+  .btn-primary {
+    @apply px-6 py-2.5 bg-indigo-600 text-white font-medium rounded-xl hover:bg-indigo-700 active:scale-95 transition-all shadow-md hover:shadow-lg disabled:opacity-50;
+  }
+
+  .btn-secondary {
+    @apply px-6 py-2.5 bg-slate-200 text-slate-700 font-medium rounded-xl hover:bg-slate-300 active:scale-95 transition-all;
+  }
+
+  .nav-link {
+    @apply text-slate-500 font-medium hover:text-indigo-600 transition-colors relative py-2;
+  }
+
+  .nav-link.active {
+    @apply text-indigo-600;
+  }
+
+  .nav-link.active::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-full h-0.5 bg-indigo-600 rounded-full;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 transition-all outline-none;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-200 rounded-full hover:bg-slate-300 transition-colors;
+}
+
+/* Base Form Logic from previous version refined */
+.questionnaire-radio:checked + label {
+  @apply bg-indigo-50 border-indigo-500 text-indigo-700 font-semibold;
+}
+
+/* SweetAlert Custom Overrides */
+.swal2-popup {
+  @apply !rounded-3xl !border-none !shadow-2xl !font-['Inter',sans-serif] !bg-white/90 !backdrop-blur-lg;
+}
+
+.swal2-styled.swal2-confirm {
+  @apply !bg-indigo-600 !rounded-xl !px-8 !py-3;
+}

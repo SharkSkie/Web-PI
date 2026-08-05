@@ -15,17 +15,22 @@ function Login() {
     e.preventDefault();
     setLoading(true);
     try {
-      await login(formData.email, formData.password);
+      const userData = await login(formData.email, formData.password);
+      const isAdmin = userData && userData.role === 'admin';
       Swal.fire({
         icon: 'success',
-        title: 'Welcome Back',
-        text: 'Signing you in...',
+        title: isAdmin ? 'sucsessfull login as admin' : 'Welcome Back',
+        text: isAdmin ? 'Redirecting to dashboard...' : 'Signing you in...',
         timer: 1500,
         showConfirmButton: false,
         toast: true,
         position: 'top-end'
       });
-      navigate('/explore');
+      if (isAdmin) {
+        navigate('/admin');
+      } else {
+        navigate('/explore');
+      }
     } catch (err) {
       Swal.fire({
         icon: 'error',
@@ -39,34 +44,30 @@ function Login() {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-6 relative">
-      {/* Background Decorative Elements */}
-      <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-indigo-400 rounded-full blur-[100px] opacity-20 animate-pulse"></div>
-      <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-violet-400 rounded-full blur-[100px] opacity-20 animate-pulse delay-700"></div>
-
+    <div className="min-h-[75vh] flex items-center justify-center px-6 relative">
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md relative z-10"
+        className="w-full max-w-[400px] relative z-10"
       >
-        <div className="glass-card p-10 md:p-12 border-none backdrop-blur-2xl">
-          <div className="flex flex-col items-center mb-10">
-            <div className="w-16 h-16 bg-gradient-to-tr from-indigo-600 to-violet-500 rounded-2xl flex items-center justify-center text-white shadow-xl mb-6 shadow-indigo-200">
-               <Layout size={32} />
+        <div className="glass-card p-8 md:p-10 border border-slate-200/50 backdrop-blur-xl">
+          <div className="flex flex-col items-center mb-8">
+            <div className="w-12 h-12 bg-slate-900 rounded-full flex items-center justify-center text-white mb-4">
+               <Layout size={22} />
             </div>
-            <h2 className="text-3xl font-black text-slate-900 mb-2">MindZines</h2>
-            <p className="text-slate-500 font-medium tracking-tight">Enter your credentials to continue</p>
+            <h2 className="text-2xl font-bold text-slate-900 mb-1 tracking-tight">Sign in to MindZine</h2>
+            <p className="text-xs text-slate-500 font-light tracking-normal">Enter your credentials to continue</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-3">
               <div className="relative group">
-                 <label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-1 block">Email Address</label>
+                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 ml-0.5 block">Email Address</label>
                  <div className="relative">
-                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={18} />
+                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={16} />
                     <input 
                       type="email" 
-                      className="input-field pl-12 bg-slate-50/50 border-slate-100 hover:bg-white"
+                      className="input-field pl-10 text-sm py-2.5 bg-slate-50 border-slate-200"
                       value={formData.email} 
                       onChange={e => setFormData({...formData, email: e.target.value})} 
                       required 
@@ -76,12 +77,12 @@ function Login() {
               </div>
 
               <div className="relative group">
-                 <label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-1 block">Password</label>
+                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 ml-0.5 block">Password</label>
                  <div className="relative">
-                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={18} />
+                    <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={16} />
                     <input 
                       type="password" 
-                      className="input-field pl-12 bg-slate-50/50 border-slate-100 hover:bg-white"
+                      className="input-field pl-10 text-sm py-2.5 bg-slate-50 border-slate-200"
                       value={formData.password} 
                       onChange={e => setFormData({...formData, password: e.target.value})} 
                       required 
@@ -93,29 +94,29 @@ function Login() {
 
             <button 
               type="submit" 
-              className="btn-primary w-full py-4 text-lg flex items-center justify-center gap-3 shadow-indigo-100 group" 
+              className="btn-primary w-full py-3 text-base flex items-center justify-center gap-2 group font-medium" 
               disabled={loading}
             >
               {loading ? (
-                <Loader2 className="animate-spin" size={20} />
+                <Loader2 className="animate-spin" size={18} />
               ) : (
-                <LogIn size={20} className="group-hover:translate-x-1 transition-transform" />
+                <LogIn size={18} className="group-hover:translate-x-0.5 transition-transform" />
               )}
               {loading ? 'Authenticating...' : 'Sign In'}
             </button>
           </form>
 
-          <div className="mt-10 pt-8 border-t border-slate-100/50 text-center space-y-4">
-             <p className="text-slate-500 text-sm">
-                Don't have an account yet? 
-                <Link to="/register" className="ml-2 text-indigo-600 font-bold hover:text-indigo-700 underline underline-offset-4">
+          <div className="mt-8 pt-6 border-t border-slate-200/50 text-center space-y-3">
+             <p className="text-slate-500 text-xs font-light">
+                Don't have an account? 
+                <Link to="/register" className="ml-1 text-indigo-600 font-medium hover:underline">
                     Create Profile
                 </Link>
              </p>
-             <div className="flex items-center justify-center gap-2 text-slate-300">
-                <Sparkles size={14} />
-                <span className="text-[10px] uppercase font-black tracking-widest">Self-Expression Hub</span>
-                <Sparkles size={14} />
+             <div className="flex items-center justify-center gap-1.5 text-slate-300">
+                <Sparkles size={12} className="text-slate-400" />
+                <span className="text-[9px] uppercase font-bold tracking-wider text-slate-400">Self-Expression Hub</span>
+                <Sparkles size={12} className="text-slate-400" />
              </div>
           </div>
         </div>
