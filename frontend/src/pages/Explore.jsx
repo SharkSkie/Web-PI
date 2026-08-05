@@ -72,10 +72,15 @@ function Explore() {
                   </div>
                   
                   <a 
-                    href={zine.file_path} 
+                    href={zine.file_path || '#'} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-1.5 w-full py-2.5 rounded-full bg-slate-100 text-slate-800 text-sm font-semibold hover:bg-slate-200 transition-all border-none"
+                    className={`flex items-center justify-center gap-1.5 w-full py-2.5 rounded-full text-sm font-semibold transition-all border-none ${
+                      zine.file_path 
+                        ? 'bg-slate-100 text-slate-800 hover:bg-slate-200 cursor-pointer' 
+                        : 'bg-slate-50 text-slate-400 cursor-not-allowed'
+                    }`}
+                    onClick={e => !zine.file_path && e.preventDefault()}
                   >
                     Read Zine <ArrowUpRight size={16} />
                   </a>
