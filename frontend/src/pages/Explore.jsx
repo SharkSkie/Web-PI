@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, User as UserIcon, Calendar, Eye, X, ExternalLink, Image as ImageIcon, Download } from 'lucide-react';
+import { FileText, User as UserIcon, Calendar, Eye, X, ExternalLink, Image as ImageIcon, Download, Loader2 } from 'lucide-react';
 
 function Explore() {
   const [zines, setZines] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedZine, setSelectedZine] = useState(null);
+  const [downloadingId, setDownloadingId] = useState(null);
 
   useEffect(() => {
     const fetchZines = async () => {
@@ -28,28 +29,49 @@ function Explore() {
     return url.match(/\.(jpeg|jpg|png|webp|gif)($|\?)/i) || (url.includes('/image/upload/') && !url.endsWith('.pdf'));
   };
 
-  const handleDownload = (zine, e) => {
+  const handleDownload = async (zine, e) => {
     if (e) e.stopPropagation();
     if (!zine || !zine.file_path) return;
 
-    let downloadUrl = zine.file_path;
-    
-    // If it's a Cloudinary URL, force attachment mode so browser prompts file download
-    if (downloadUrl.includes('cloudinary.com') && downloadUrl.includes('/upload/')) {
-      downloadUrl = downloadUrl.replace('/upload/', '/upload/fl_attachment/');
-    }
-
+    setDownloadingId(zine.id);
     const cleanTitle = (zine.title || 'zine').replace(/[^a-z0-9]/gi, '_').toLowerCase();
-    const isImg = isImageFile(downloadUrl);
+    const isImg = isImageFile(zine.file_path);
     const fileName = `${cleanTitle}${isImg ? '.png' : '.pdf'}`;
 
-    const link = document.createElement('a');
-    link.href = downloadUrl;
-    link.download = fileName;
-    link.target = '_blank';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    try {
+      if (zine.file_path.startsWith('data:')) {
+        const link = document.createElement('a');
+        link.href = zine.file_path;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setDownloadingId(null);
+        return;
+      }
+
+      let downloadUrl = zine.file_path;
+      if (downloadUrl.includes('cloudinary.com') && downloadUrl.includes('/upload/')) {
+        downloadUrl = downloadUrl.replace('/upload/', '/upload/fl_attachment/');
+      }
+
+      const response = await fetch(downloadUrl);
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (err) {
+      console.error('Download error, opening fallback link:', err);
+      window.open(zine.file_path, '_blank');
+    } finally {
+      setDownloadingId(null);
+    }
   };
 
   return (
@@ -117,11 +139,15 @@ function Explore() {
 
                     <button
                       onClick={(e) => handleDownload(zine, e)}
-                      disabled={!zine.file_path}
-                      className="px-4 py-2.5 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-slate-900 text-sm font-semibold transition-all flex items-center gap-1.5"
+                      disabled={!zine.file_path || downloadingId === zine.id}
+                      className="px-4 py-2.5 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-slate-900 text-sm font-semibold transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
                       title="Download Zine"
                     >
-                      <Download size={16} />
+                      {downloadingId === zine.id ? (
+                        <Loader2 size={16} className="animate-spin text-indigo-600" />
+                      ) : (
+                        <Download size={16} />
+                      )}
                     </button>
                   </div>
                 </div>
@@ -171,10 +197,16 @@ function Explore() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleDownload(selectedZine)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white text-xs font-bold transition-all"
+                    disabled={downloadingId === selectedZine.id}
+                    className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white text-xs font-bold transition-all cursor-pointer"
                     title="Download Copy"
                   >
-                    <Download size={14} /> Download
+                    {downloadingId === selectedZine.id ? (
+                      <Loader2 size={14} className="animate-spin" />
+                    ) : (
+                      <Download size={14} />
+                    )} 
+                    Download
                   </button>
 
                   {!selectedZine.file_path.startsWith('data:') && (
