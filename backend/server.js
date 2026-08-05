@@ -33,15 +33,22 @@ app.use(express.urlencoded({ extended: true }));
 // Serve uploaded files
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
-// API Routes
+// Mount routes on BOTH /api/* and /* so Vercel URL rewrites work 100% seamlessly
 app.use('/api/zines', zineRoutes);
+app.use('/zines', zineRoutes);
+
 app.use('/api/questionnaire', questionnaireRoutes);
+app.use('/questionnaire', questionnaireRoutes);
+
 app.use('/api/auth', authRoutes);
+app.use('/auth', authRoutes);
+
 app.use('/api/admin', adminRoutes);
+app.use('/admin', adminRoutes);
 
 // Health check
-app.get('/api', (req, res) => {
-    res.json({ message: 'API is running', status: 'ok' });
+app.get(['/api', '/'], (req, res) => {
+    res.json({ message: 'MindZine API is running', status: 'ok' });
 });
 
 // Start server only when run directly (not on Vercel)
