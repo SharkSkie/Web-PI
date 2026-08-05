@@ -72,7 +72,7 @@ function Explore() {
                   </div>
                   
                   <a 
-                    href={zine.file_path ? `https://docs.google.com/gview?url=${encodeURIComponent(zine.file_path)}&embedded=false` : '#'} 
+                    href={zine.file_path ? zine.file_path.replace('/upload/', '/upload/fl_attachment/') : '#'} 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className={`flex items-center justify-center gap-1.5 w-full py-2.5 rounded-full text-sm font-semibold transition-all border-none ${
