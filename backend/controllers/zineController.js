@@ -13,10 +13,11 @@ cloudinary.config({
  */
 const uploadToCloudinary = (buffer, originalname) => {
     return new Promise((resolve, reject) => {
-        const filename = `${Date.now()}-${originalname.replace(/\s+/g, '_')}`;
+        const cleanName = originalname.replace(/\.[^/.]+$/, "").replace(/\s+/g, '_');
+        const filename = `${Date.now()}-${cleanName}`;
         const stream = cloudinary.uploader.upload_stream(
             {
-                resource_type: 'raw',  // PDF files must use 'raw'
+                resource_type: 'auto',
                 folder: 'mindzine',
                 public_id: filename
             },
