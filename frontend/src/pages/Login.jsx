@@ -32,10 +32,12 @@ function Login() {
         navigate('/explore');
       }
     } catch (err) {
+      const rawError = err.response?.data?.error || err.response?.data?.message || err.message;
+      const errMsg = typeof rawError === 'string' ? rawError : 'Invalid email or password.';
       Swal.fire({
         icon: 'error',
         title: 'Authentication Failed',
-        text: err.response?.data?.error || 'Invalid email or password.',
+        text: errMsg,
         confirmButtonColor: '#6366f1'
       });
     } finally {

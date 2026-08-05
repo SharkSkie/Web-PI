@@ -60,8 +60,8 @@ function Register() {
         position: 'top-end'
       });
       navigate('/explore');
-    } catch (err) {
-      const errMsg = err.response?.data?.error || 'Could not create account. Please try again.';
+      const rawError = err.response?.data?.error || err.response?.data?.message || err.message;
+      const errMsg = typeof rawError === 'string' ? rawError : 'Could not create account. Please try again.';
       if (errMsg === 'User already exists') {
         setErrors(prev => ({ ...prev, email: 'This email is already registered. Try signing in instead.' }));
         Swal.fire({

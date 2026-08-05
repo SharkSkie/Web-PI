@@ -36,14 +36,18 @@ exports.registerUser = async (req, res) => {
             token: generateToken(result.insertId)
         });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Database error' });
+        console.error('Registration error:', error);
+        res.status(500).json({ error: error.message || 'Database error during registration' });
     }
 };
 
 exports.loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
+
+        if (!email || !password) {
+            return res.status(400).json({ error: 'Please fill in all fields' });
+        }
 
         const [rows] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
         if (rows.length === 0) {
@@ -52,14 +56,12 @@ exports.loginUser = async (req, res) => {
 
         const user = rows[0];
 
-        // Some seeder users might have plain text "password". Fallback to direct check if no bcrypt hash match
         let isMatch = false;
         try {
             isMatch = await bcrypt.compare(password, user.password);
         } catch(e) {}
         
         if (!isMatch && password === user.password) {
-            // For Demo users seeded without bcrypt
             isMatch = true;
         }
 
@@ -75,8 +77,8 @@ exports.loginUser = async (req, res) => {
             res.status(400).json({ error: 'Invalid credentials' });
         }
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Database error' });
+        console.error('Login error:', error);
+        res.status(500).json({ error: error.message || 'Database error during login' });
     }
 };
 
